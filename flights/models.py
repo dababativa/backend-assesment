@@ -11,6 +11,11 @@ class Agent(models.Model):
     def __str__(self):
         return self.name
 
+class Airport(models.Model):
+    name = models.CharField(max_length=10)
+    def __str__(self):
+        return self.name
+
 class Airline(models.Model):
     airline_id = models.CharField(max_length= 128)
     name = models.CharField(max_length= 128,verbose_name='Nombre')
@@ -19,8 +24,8 @@ class Airline(models.Model):
 
 class Leg(models.Model):
     api_id = models.CharField(max_length= 128)
-    departure_airport = models.CharField(max_length= 128, verbose_name='Aeropuerto de salida')
-    arrival_airport = models.CharField(max_length= 128, verbose_name='Aeropuerto de llegada')
+    departure_airport = models.ForeignKey(Airport, on_delete=models.RESTRICT, related_name='departure_leg', verbose_name='Aeropuerto de salida')
+    arrival_airport = models.ForeignKey(Airport, on_delete=models.RESTRICT, related_name='arrival_leg', verbose_name='Aeropuerto de llegada')
     departure_time = models.DateTimeField(verbose_name='Hora de salida')
     arrival_time = models.DateTimeField(verbose_name='Hora de llegada')
     stops = models.PositiveIntegerField(verbose_name='Cantidad de paradas')

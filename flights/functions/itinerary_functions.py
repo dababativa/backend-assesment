@@ -1,5 +1,5 @@
 from locale import currency
-from ..models import Agent, Airline, Itinerary, Leg
+from ..models import Agent, Airline, Itinerary, Leg, Airport
 
 def create_legs(legs):
     db_legs = []
@@ -12,11 +12,22 @@ def create_legs(legs):
             except Airline.DoesNotExist:
                 airline = Airline(airline_id = leg['airline_id'], name = leg['airline_name'] )
                 airline.save()
+            try:
+                departure_airport = Airport.objects.get(name = leg['departure_airport'])
+            except Airport.DoesNotExist:
+                departure_airport = Airport(name = leg['departure_airport'] )
+                departure_airport.save()
+            try:
+                arrival_airport = Airport.objects.get(name = leg['arrival_airport'])
+            except Airport.DoesNotExist:
+                arrival_airport = Airport(name = leg['arrival_airport'] )
+                arrival_airport.save()
+
             db_leg = Leg(
                 api_id=leg['id'],
-                departure_airport = leg['departure_airport'],
+                departure_airport = departure_airport,
                 departure_time = leg['departure_time'], 
-                arrival_airport = leg['arrival_airport'],
+                arrival_airport = arrival_airport,
                 arrival_time = leg['arrival_time'], 
                 stops = int(leg['stops']),
                 duration_mins = int(leg['duration_mins']),
@@ -28,6 +39,7 @@ def create_legs(legs):
 
 def create_itineraries(itineraries):
     for itinerary in itineraries:
+        print(itinerary)
         try:
             Itinerary.objects.get(api_id = itinerary["id"])
         except Itinerary.DoesNotExist:
@@ -48,5 +60,5 @@ def create_itineraries(itineraries):
                 agent = agent
             )
             db_itinerary.save()
-            db_itinerary.legs.add(db_legs)
+            db_itinerary.legs.set(db_legs)
 

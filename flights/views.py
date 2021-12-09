@@ -9,10 +9,15 @@ from rest_framework.response import Response
 def get_itineraries(request):
     if request.method == 'GET':
         agent_name = request.GET.get('agent_name', None)
+        min_price = request.GET.get('min_price', None)
+        max_price = request.GET.get('max_price', None)
         itineraries = Itinerary.objects.all()
         if agent_name:
             itineraries = itineraries.filter(agent__name__contains=agent_name)
-        print(itineraries[0].legs.all())
+        if min_price:
+            itineraries = itineraries.filter(price__gte=min_price)
+        if max_price:
+            itineraries = itineraries.filter(price__lte=max_price)
         serialized_itineraries = map(json_itinerary, itineraries)
         return Response({'data': serialized_itineraries}, status=200)
 
@@ -32,10 +37,10 @@ def json_itinerary(itinerary):
 def json_leg(leg):
     return {
         'id': leg.id,
-        'departure_airport': leg.departure_airport,
-        'arrival_airport':  leg.arrival_airport,
+        'departure_airport': leg.departure_airport.name,
+        'arrival_airport':  leg.arrival_airport.name,
         'departure_time':  leg.departure_time,
-        'arrival_time':  leg.arrival_airport,
+        'arrival_time':  leg.arrival_time,
         'stops': leg.stops,
         'airline': {
             "id": leg.airline.id,
