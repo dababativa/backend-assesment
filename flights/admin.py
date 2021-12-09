@@ -28,11 +28,12 @@ class ItineraryAdmin(admin.ModelAdmin):
 
         self.message_user(request, "Successfully created itineraries", messages.SUCCESS)
 
-
 class AgentAdmin(admin.ModelAdmin):
     search_fields = ['name']
+
 class AirlineAdmin(admin.ModelAdmin):
     search_fields = ['name', 'airline_id']
+
 class LegAdmin(admin.ModelAdmin):
     list_display = ['departure_airport', 'departure_time', 'arrival_airport', 'arrival_time', 'airline']
     search_fields = ['departure_airport', 'arrival_airport', 'airline__name', 'airline__airline_id']

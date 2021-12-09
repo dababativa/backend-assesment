@@ -1,6 +1,7 @@
 from pyexpat import model
 from tabnanny import verbose
 from django.db import models
+from django.core.validators import MinValueValidator
 
 # Create your models here.
 class Agent(models.Model):
@@ -31,7 +32,7 @@ class Leg(models.Model):
 
 class Itinerary(models.Model):
     api_id = models.CharField(max_length= 128)
-    price = models.FloatField(verbose_name='Precio')
+    price = models.FloatField(verbose_name='Precio', validators=[MinValueValidator(0)])
     currency = models.CharField(max_length=7, verbose_name='Moneda')
     agent = models.ForeignKey(Agent, on_delete=models.RESTRICT, verbose_name = 'Agente')
     legs = models.ManyToManyField(Leg)
